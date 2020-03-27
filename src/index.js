@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
 
-let REACT_APP_BACKEND_URL = process.env['REACT_APP_BACKEND_URL']
+let REACT_APP_BACKEND_URL = 'localhost' // process.env['REACT_APP_BACKEND_URL']
 
 
 class Order extends React.Component {
