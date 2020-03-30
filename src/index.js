@@ -9,19 +9,61 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Table from 'react-bootstrap/Table';
 
 
 let REACT_APP_BACKEND_URL = 'localhost' // process.env['REACT_APP_BACKEND_URL']
 
 
 class Order extends React.Component {
+  constructor(props) {
+    super(props);
+
+    let seconds_since_order = Math.round((new Date()).getTime() / 1000
+      - ((new Date(this.props.created)).getTime() / 1000))
+
+    this.state = {
+      seconds_since_order: seconds_since_order,
+      time_since_order: this.toMinutesWithSeconds(seconds_since_order)
+    };
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  toMinutesWithSeconds(seconds) {
+    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
+  }
+
+  tick() {
+    let new_time_in_seconds = this.state.seconds_since_order + 1;
+    this.setState({
+      seconds_since_order: new_time_in_seconds,
+      time_since_order: this.toMinutesWithSeconds(new_time_in_seconds)
+    });
+  }
+
+  inEuro(cents) {
+    return (cents / 100).toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
+  }
+
   render() {
+    let total = 0;
+    for (let article of this.props.articles) {
+      total += article.price;
+    }
+
+
     return (
-      <Card>
+      <Card className="{this.props.status}">
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title">Order Nummer {this.props.id}</h5>
+              <h5 className="card-title">{this.props.status} Order Nummer {this.props.id}</h5>
               <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
               <p className="card-text">{this.props.name}<br />{this.props.street}</p>
               <a href="https://google.com" className="card-link">Finish</a>
@@ -33,7 +75,43 @@ class Order extends React.Component {
               <a href="https://google.com" className="card-link">Cancel</a>
             </Col>
             <Col xs="4" className="my-auto">
-              <h5>Created: {this.props.created}</h5>
+              <h5>Created: {this.state.time_since_order}</h5>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Gericht</th>
+                    <th>Anzahl</th>
+                    <th>Preis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.props.articles.map((article, index) => (
+                    <tr>
+                      <td>
+                         {article.alias} - {article.name}
+                      </td>
+                      <td>
+                        {article.amount}
+                      </td>
+                      <td>
+                        {this.inEuro(article.price)}
+                      </td>
+                    </tr>
+                  ))}
+
+                  <tr>
+                    <td colSpan="2">Total</td>
+                    <td>
+                      {this.inEuro(total)}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </Col>
           </Row>
         </Card.Body>
@@ -74,13 +152,16 @@ class OrderForm extends React.Component {
 
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="type" className="col-form-label">Type</Form.Label>
+            <Form.Label htmlFor="type" className="col-form-label">Art</Form.Label>
           </Col>
           <Col xs="10">
-            <Form.Control id="type" type="text" className="form-control" required value={this.props.order.type} onChange={(e) => {this.props.handleInputChange(e)}} />
+            <Form.Control id="type" as="select" value={this.props.order.type} onChange={(e) => {this.props.handleInputChange(e)}} required>
+              <option value="TAKE_AWAY" selected>Abholung</option>
+              <option value="DELIEVERY">Lieferung</option>
+              <option value="HOUSE">Hier essen</option>
+            </Form.Control>
           </Col>
         </Form.Row>
-
         <Form.Row className="mb-2">
           <Col xs="2">
             <Form.Label htmlFor="street" className="col-form-label">Street</Form.Label>
@@ -113,14 +194,14 @@ class OrderForm extends React.Component {
             <Form.Label htmlFor="telephone" className="col-form-label">Telephone</Form.Label>
           </Col>
           <Col xs="10">
-            <Form.Control id="telephone" type="text" className="form-control" required value={this.props.order.telephone} onChange={(e) => {this.props.handleInputChange(e)}} />
+            <Form.Control id="telephone" type="tel" className="form-control" required value={this.props.order.telephone} onChange={(e) => {this.props.handleInputChange(e)}} />
           </Col>
         </Form.Row>
 
         {this.props.order.articles.map((article, index) => (
           <Form.Row key={index} className="mb-2">
             <Col xs="2">
-              <Form.Label htmlFor={index} className="col-form-label">Article</Form.Label>
+              <Form.Label htmlFor={index} className="col-form-label">Gericht</Form.Label>
             </Col>
             <Col xs="6">
               <Form.Control id={index} type="text" className="form-control" required value={article.id} onChange={(e) => {this.props.handleArticleIdChange(e, index)}} />
@@ -159,7 +240,7 @@ class EditOrderForm extends React.Component {
          </Modal.Header>
          <Modal.Body>
           <OrderForm {...this.props}
-                     onSubmit={this.props.handleSubmit}
+                     onSubmit={this.props.onSubmit}
                      handleArticleIdChange={this.props.handleArticleIdChange}
                      handleArticleAmountChange={this.props.handleArticleAmountChange}
                      addArticle={this.props.addArticle}
@@ -167,14 +248,6 @@ class EditOrderForm extends React.Component {
                      handleInputChange={this.props.handleInputChange}
                      handleClose={this.props.handleClose} />
          </Modal.Body>
-         <Modal.Footer>
-           <Button variant="secondary" onClick={this.props.handleClose}>
-             Close
-           </Button>
-           <Button variant="primary" onClick={this.props.handleClose}>
-             Save Changes
-           </Button>
-         </Modal.Footer>
        </Modal>
      );
   }
@@ -196,7 +269,7 @@ class FoodManager extends React.Component {
       },
       orders: [],
       show: false,
-      editOrder: null
+      createOrderFallback: null
     };
 
     this.handleArticleIdChange = this.handleArticleIdChange.bind(this);
@@ -214,12 +287,11 @@ class FoodManager extends React.Component {
     this.updateOverview();
   }
 
-  handleInputChange(event, input) {
-    this.setState({order: {...this.state.order, [event.target.id]: event.target.value}});
-  }
-
   handleClose () {
-    this.setState({show: false});
+    this.setState({
+      show: false,
+      order: this.state.createOrderFallback
+    });
   }
 
   handleShow (event, index) {
@@ -228,9 +300,14 @@ class FoodManager extends React.Component {
       .then(res => {
         this.setState({
           show: true,
+          createOrderFallback: this.state.order,
           order: res
         });
       });
+  }
+
+  handleInputChange(event, input) {
+    this.setState({order: {...this.state.order, [event.target.id]: event.target.value}});
   }
 
   handleArticleIdChange(event, index) {
@@ -263,9 +340,20 @@ class FoodManager extends React.Component {
       });
   }
 
+  // COMPLEMETE, TO_DO, CANCELED, IN_PROGRESS
+
   handleSubmit(event) {
-    fetch(`http://${REACT_APP_BACKEND_URL}:3000/order`, {
-      method: 'POST',
+    let method, target_url;
+    if (this.state.show) {
+      method = 'PUT';
+      target_url = '/' + this.state.order.id.toString();
+    } else {
+      method = 'POST';
+      target_url = ''
+    }
+
+    fetch(`http://${REACT_APP_BACKEND_URL}:3000/order${target_url}`, {
+      method: method,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -280,6 +368,9 @@ class FoodManager extends React.Component {
       })
     })
       .then(() => {
+        if (this.state.show) {
+          this.handleClose();
+        }
         this.updateOverview();
       });
 
@@ -297,13 +388,21 @@ class FoodManager extends React.Component {
   }
 
   render() {
+    const show = this.state.show;
+    let order;
+    if (show) {
+      order = {order: this.state.createOrderFallback};
+    } else {
+      order = {order: this.state.order};
+    }
+
     return (
       <Container>
         <Row>
           <Col xs="12" lg="6">
             <Row>
               <Col>
-                <h2>Order Overview</h2>
+                <h2>Bestellung Übersicht</h2>
               </Col>
             </Row>
             <Row>
@@ -321,12 +420,12 @@ class FoodManager extends React.Component {
           <Col xs="12" lg="6">
             <Row>
               <Col>
-                <h2>Create Order</h2>
+                <h2>Bestellung erstellen</h2>
               </Col>
             </Row>
             <Row>
               <Col>
-                <OrderForm {...this.state}
+                <OrderForm {...order}
                            onSubmit={this.handleSubmit}
                            handleArticleIdChange={this.handleArticleIdChange}
                            handleArticleAmountChange={this.handleArticleAmountChange}
