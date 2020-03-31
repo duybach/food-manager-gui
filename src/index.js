@@ -57,25 +57,28 @@ class Order extends React.Component {
       total += article.price;
     }
 
-
     return (
-      <Card className="{this.props.status}">
+      <Card className="">
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title">{this.props.status} Order Nummer {this.props.id}</h5>
+              <h5 className="card-title">{this.props.status} Bestellung Nummer #{this.props.id}</h5>
               <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
               <p className="card-text">{this.props.name}<br />{this.props.street}</p>
-              <a href="https://google.com" className="card-link">Finish</a>
+              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
+                Finish
+              </Button>
 
-              <Button variant="link" className="card-link p-0" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
                 Edit
               </Button>
 
-              <a href="https://google.com" className="card-link">Cancel</a>
+              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
+                Cancel
+              </Button>
             </Col>
             <Col xs="4" className="my-auto">
-              <h5>Created: {this.state.time_since_order}</h5>
+              <h5>Zeit: {this.state.time_since_order}</h5>
             </Col>
           </Row>
 
@@ -122,16 +125,31 @@ class Order extends React.Component {
 
 class OrderOverview extends React.Component {
   render() {
+    let orders = [];
+    for (let order of this.props.orders) {
+
+      if (this.props.active) {
+        if (!(order.status === 'CANCEL' || order.status === 'COMPLETE')) {
+          orders.push(order);
+        }
+      } else {
+        if (order.status === 'CANCEL' || order.status === 'COMPLETE') {
+          orders.push(order);
+        }
+      }
+    }
+
     return (
       <>
-        {this.props.orders.map((order, index) => (
-          <Row>
-            <Col>
+        <Row>
+          {orders.map((order, index) => (
+            <Col xs="6">
               <Order key={index} {...order}
-                                 handleShow={this.props.handleShow}/>
+                                 handleShow={this.props.handleShow}
+                                 handleOrderStatus={this.props.handleOrderStatus} />
             </Col>
-          </Row>
-        ))}
+          ))}
+        </Row>
       </>
     );
   }
@@ -156,7 +174,7 @@ class OrderForm extends React.Component {
           </Col>
           <Col xs="10">
             <Form.Control id="type" as="select" value={this.props.order.type} onChange={(e) => {this.props.handleInputChange(e)}} required>
-              <option value="TAKE_AWAY" selected>Abholung</option>
+              <option value="TAKE_AWAY">Abholung</option>
               <option value="DELIEVERY">Lieferung</option>
               <option value="HOUSE">Hier essen</option>
             </Form.Control>
@@ -259,17 +277,11 @@ class FoodManager extends React.Component {
 
     this.state = {
       order: {
-        articles: [{id: '', amount: 1}],
-        name: '',
-        type: '',
-        street: '',
-        zipcode: '',
-        city: '',
-        telephone: '',
+        type: 'TAKE_AWAY',
+        articles: [{id: '', amount: 1}]
       },
       orders: [],
-      show: false,
-      createOrderFallback: null
+      show: false
     };
 
     this.handleArticleIdChange = this.handleArticleIdChange.bind(this);
@@ -281,6 +293,7 @@ class FoodManager extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleShow = this.handleShow.bind(this);
+    this.handleOrderStatus = this.handleOrderStatus.bind(this);
   }
 
   componentDidMount() {
@@ -327,7 +340,7 @@ class FoodManager extends React.Component {
   }
 
   removeArticle(event, index) {
-    let articles =  [...this.state.articles];
+    let articles =  [...this.state.order.articles];
     articles.splice(index, 1);
     this.setState({order: {...this.state.order, articles: articles}});
   }
@@ -338,6 +351,32 @@ class FoodManager extends React.Component {
       .then(res => {
         this.setState({orders: res});
       });
+  }
+
+  handleOrderStatus(event, order_id, status) {
+    let order
+    for (let tmp_order of this.state.orders) {
+      if (tmp_order.id === order_id) {
+        order = tmp_order;
+      }
+    }
+
+    if (order) {
+      fetch(`http://${REACT_APP_BACKEND_URL}:3000/order/${order_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: status,
+          articles: order.articles
+        })
+      })
+        .then(() => {
+          this.updateOverview();
+        });
+    }
+
   }
 
   // COMPLEMETE, TO_DO, CANCELED, IN_PROGRESS
@@ -352,6 +391,8 @@ class FoodManager extends React.Component {
       target_url = ''
     }
 
+    console.log(this.state.order.type)
+
     fetch(`http://${REACT_APP_BACKEND_URL}:3000/order${target_url}`, {
       method: method,
       headers: {
@@ -359,6 +400,7 @@ class FoodManager extends React.Component {
       },
       body: JSON.stringify({
         name: this.state.order.name,
+        status: this.state.order.status,
         type: this.state.order.type,
         street: this.state.order.street,
         zipcode: this.state.order.zipcode,
@@ -376,7 +418,7 @@ class FoodManager extends React.Component {
 
     this.setState({order: {
       name: '',
-      type: '',
+      type: 'TAKE_AWAY',
       street: '',
       zipcode: '',
       city: '',
@@ -397,18 +439,33 @@ class FoodManager extends React.Component {
     }
 
     return (
-      <Container>
+      <Container fluid>
         <Row>
-          <Col xs="12" lg="6">
+          <Col xs="12" lg="8">
             <Row>
               <Col>
-                <h2>Bestellung Übersicht</h2>
+                <h2>Bestellungen Übersicht</h2>
               </Col>
             </Row>
             <Row>
             <Col>
               <OrderOverview {...this.state}
-                             handleShow={this.handleShow}/>
+                             active={true}
+                             handleShow={this.handleShow}
+                             handleOrderStatus={this.handleOrderStatus} />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h2>Abgeschlossene Bestellungen Übersicht</h2>
+              </Col>
+            </Row>
+            <Row>
+            <Col>
+              <OrderOverview {...this.state}
+                             active={false}
+                             handleShow={this.handleShow}
+                             handleOrderStatus={this.handleOrderStatus} />
               </Col>
             </Row>
           </Col>
@@ -417,7 +474,7 @@ class FoodManager extends React.Component {
             <hr />
           </Col>
 
-          <Col xs="12" lg="6">
+          <Col xs="12" lg="4">
             <Row>
               <Col>
                 <h2>Bestellung erstellen</h2>
