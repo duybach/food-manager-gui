@@ -2,274 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import Table from 'react-bootstrap/Table';
 
+import EditOrderForm from './components/EditOrderForm';
+import OrderForm from './components/OrderForm';
+import OrderOverview from './components/OrderOverview';
 
-let REACT_APP_BACKEND_URL = 'localhost' // process.env['REACT_APP_BACKEND_URL']
-
-
-class Order extends React.Component {
-  constructor(props) {
-    super(props);
-
-    let seconds_since_order = Math.round((new Date()).getTime() / 1000
-      - ((new Date(this.props.created)).getTime() / 1000))
-
-    this.state = {
-      seconds_since_order: seconds_since_order,
-      time_since_order: this.toMinutesWithSeconds(seconds_since_order)
-    };
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      1000
-    );
-  }
-
-  toMinutesWithSeconds(seconds) {
-    return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
-  }
-
-  tick() {
-    let new_time_in_seconds = this.state.seconds_since_order + 1;
-    this.setState({
-      seconds_since_order: new_time_in_seconds,
-      time_since_order: this.toMinutesWithSeconds(new_time_in_seconds)
-    });
-  }
-
-  inEuro(cents) {
-    return (cents / 100).toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
-  }
-
-  render() {
-    let total = 0;
-    for (let article of this.props.articles) {
-      total += article.price;
-    }
-
-    return (
-      <Card className="">
-        <Card.Body>
-          <Row>
-            <Col xs="8">
-              <h5 className="card-title">{this.props.status} Bestellung Nummer #{this.props.id}</h5>
-              <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
-              <p className="card-text">{this.props.name}<br />{this.props.street}</p>
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
-                Finish
-              </Button>
-
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
-                Edit
-              </Button>
-
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
-                Cancel
-              </Button>
-            </Col>
-            <Col xs="4" className="my-auto">
-              <h5>Zeit: {this.state.time_since_order}</h5>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Gericht</th>
-                    <th>Anzahl</th>
-                    <th>Preis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.props.articles.map((article, index) => (
-                    <tr>
-                      <td>
-                         {article.alias} - {article.name}
-                      </td>
-                      <td>
-                        {article.amount}
-                      </td>
-                      <td>
-                        {this.inEuro(article.price)}
-                      </td>
-                    </tr>
-                  ))}
-
-                  <tr>
-                    <td colSpan="2">Total</td>
-                    <td>
-                      {this.inEuro(total)}
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-    );
-  }
-}
-
-class OrderOverview extends React.Component {
-  render() {
-    let orders = [];
-    for (let order of this.props.orders) {
-
-      if (this.props.active) {
-        if (!(order.status === 'CANCEL' || order.status === 'COMPLETE')) {
-          orders.push(order);
-        }
-      } else {
-        if (order.status === 'CANCEL' || order.status === 'COMPLETE') {
-          orders.push(order);
-        }
-      }
-    }
-
-    return (
-      <>
-        <Row>
-          {orders.map((order, index) => (
-            <Col xs="6">
-              <Order key={index} {...order}
-                                 handleShow={this.props.handleShow}
-                                 handleOrderStatus={this.props.handleOrderStatus} />
-            </Col>
-          ))}
-        </Row>
-      </>
-    );
-  }
-}
-
-class OrderForm extends React.Component {
-  render() {
-    return (
-      <Form className="mb-4" onSubmit={this.props.onSubmit}>
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="name" className="col-form-label">Name</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="name" type="text" className="form-control" required value={this.props.order.name} onChange={(e) => {this.props.handleInputChange(e)}} />
-          </Col>
-        </Form.Row>
-
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="type" className="col-form-label">Art</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="type" as="select" value={this.props.order.type} onChange={(e) => {this.props.handleInputChange(e)}} required>
-              <option value="TAKE_AWAY">Abholung</option>
-              <option value="DELIEVERY">Lieferung</option>
-              <option value="HOUSE">Hier essen</option>
-            </Form.Control>
-          </Col>
-        </Form.Row>
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="street" className="col-form-label">Street</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="street" type="text" className="form-control" required value={this.props.order.street} onChange={(e) => {this.props.handleInputChange(e)}} />
-          </Col>
-        </Form.Row>
-
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="zipcode" className="col-form-label">Zipcode</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="zipcode" type="text" className="form-control" required value={this.props.order.zipcode} onChange={(e) => {this.props.handleInputChange(e)}} />
-          </Col>
-        </Form.Row>
-
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="city" className="col-form-label">City</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="city" type="text" className="form-control" required value={this.props.order.city} onChange={(e) => {this.props.handleInputChange(e)}} />
-          </Col>
-        </Form.Row>
-
-        <Form.Row className="mb-2">
-          <Col xs="2">
-            <Form.Label htmlFor="telephone" className="col-form-label">Telephone</Form.Label>
-          </Col>
-          <Col xs="10">
-            <Form.Control id="telephone" type="tel" className="form-control" required value={this.props.order.telephone} onChange={(e) => {this.props.handleInputChange(e)}} />
-          </Col>
-        </Form.Row>
-
-        {this.props.order.articles.map((article, index) => (
-          <Form.Row key={index} className="mb-2">
-            <Col xs="2">
-              <Form.Label htmlFor={index} className="col-form-label">Gericht</Form.Label>
-            </Col>
-            <Col xs="6">
-              <Form.Control id={index} type="text" className="form-control" required value={article.id} onChange={(e) => {this.props.handleArticleIdChange(e, index)}} />
-            </Col>
-            <Col xs="2">
-              <Form.Control type="number" className="form-control" min="1" required value={article.amount} onChange={(e) => {this.props.handleArticleAmountChange(e, index)}} />
-            </Col>
-            <Col xs="2">
-              <Button variant="danger" onClick={(e) => {this.props.removeArticle(e, index)}}>X</Button>
-            </Col>
-          </Form.Row>
-        ))}
-
-        <Row className="mb-4">
-          <Col>
-            <Button variant="secondary" onClick={(e) => {this.props.addArticle(e)}}>Add article</Button>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col>
-            <Button variant="primary" type="Submit">Submit</Button>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-}
-
-class EditOrderForm extends React.Component {
-  render() {
-    return (
-       <Modal show={this.props.show} onHide={this.props.handleClose}>
-         <Modal.Header closeButton>
-           <Modal.Title>Modal heading</Modal.Title>
-         </Modal.Header>
-         <Modal.Body>
-          <OrderForm {...this.props}
-                     onSubmit={this.props.onSubmit}
-                     handleArticleIdChange={this.props.handleArticleIdChange}
-                     handleArticleAmountChange={this.props.handleArticleAmountChange}
-                     addArticle={this.props.addArticle}
-                     removeArticle={this.props.removeArticle}
-                     handleInputChange={this.props.handleInputChange}
-                     handleClose={this.props.handleClose} />
-         </Modal.Body>
-       </Modal>
-     );
-  }
-}
+import {
+  REACT_APP_BACKEND_URL
+} from './constants/Constants';
 
 class FoodManager extends React.Component {
   constructor(props) {
@@ -455,6 +198,11 @@ class FoodManager extends React.Component {
                              handleOrderStatus={this.handleOrderStatus} />
               </Col>
             </Row>
+
+            <Col xs="12">
+              <hr />
+            </Col>
+
             <Row>
               <Col>
                 <h2>Abgeschlossene Bestellungen Übersicht</h2>
