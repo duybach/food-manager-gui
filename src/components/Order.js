@@ -47,6 +47,15 @@ class Order extends React.Component {
       total += article.price;
     }
 
+    let edit_button = ''
+    if (this.props.status === 'TO_DO') {
+      edit_button = (
+        <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+          Edit
+        </Button>
+      );
+    }
+
     return (
       <Card className="">
         <Card.Body>
@@ -63,9 +72,7 @@ class Order extends React.Component {
                 Finish
               </Button>
 
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
-                Edit
-              </Button>
+              {edit_button}
 
               <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
                 Cancel
