@@ -30,9 +30,7 @@ class FoodWorker extends React.Component {
     fetch(`http://${REACT_APP_BACKEND_URL}:3000/worker/${this.state.id}`)
       .then(res => res.json())
       .then(res => {
-        if (!('message' in res)) {
-          this.setState({order_articles: res});
-        }
+        this.setState({order_articles: res});
       });
   }
 

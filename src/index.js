@@ -24,6 +24,10 @@ function Worker() {
   );
 }
 
+for (let x in this) {
+  alert(x);
+}
+
 // ========================================
 
 ReactDOM.render(
@@ -32,7 +36,7 @@ ReactDOM.render(
       <Navbar.Brand href="/">FoodManager</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto">
+        <Nav className="mr-auto" activeKey={window.location.pathname}>
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/worker/1">Worker 1</Nav.Link>
           <Nav.Link href="/worker/2">Worker 2</Nav.Link>

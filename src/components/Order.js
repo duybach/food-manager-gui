@@ -9,20 +9,28 @@ class Order extends React.Component {
   constructor(props) {
     super(props);
 
-    let seconds_since_order = Math.round((new Date()).getTime() / 1000
-      - (this.props.created / 1000))
+    if (this.props.status !== 'COMPLETE') {
+      let seconds_since_order = Math.round((new Date()).getTime() / 1000
+        - (this.props.created / 1000))
 
-    this.state = {
-      seconds_since_order: seconds_since_order,
-      time_since_order: this.toMinutesWithSeconds(seconds_since_order)
-    };
+      this.state = {
+        seconds_since_order: seconds_since_order,
+        time_since_order: this.toMinutesWithSeconds(seconds_since_order)
+      };
+    }
   }
 
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      1000
-    );
+    if (this.props.status !== 'COMPLETE') {
+      this.timerID = setInterval(
+        () => this.tick(),
+        1000
+      );
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
   }
 
   toMinutesWithSeconds(seconds) {
@@ -41,19 +49,18 @@ class Order extends React.Component {
     return (cents / 100).toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
   }
 
+  getDate() {
+    let date = new Date(this.props.created * 1);
+
+    return (
+      `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear().toString().slice(2,4)} ${date.getHours()}:${date.getMinutes()}`
+    );
+  }
+
   render() {
     let total = 0;
     for (let article of this.props.articles) {
       total += article.price;
-    }
-
-    let edit_button = ''
-    if (this.props.status === 'TO_DO') {
-      edit_button = (
-        <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
-          Edit
-        </Button>
-      );
     }
 
     return (
@@ -61,63 +68,76 @@ class Order extends React.Component {
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title">{this.props.status} Bestellung Nummer #{this.props.id}</h5>
+              <h5 className="card-title">Bestellung Nummer #{this.props.id}</h5>
               <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
               <p className="card-text">{this.props.name}<br />{this.props.street}</p>
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
-                Start
-              </Button>
 
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
-                Finish
-              </Button>
+              {this.props.status === 'TODO' &&
+                <>
+                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
+                    Start
+                  </Button>date_in_seconds
 
-              {edit_button}
+                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+                    Edit
+                  </Button>
+                </>
+              }
 
-              <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
-                Cancel
-              </Button>
+              {this.props.status !== 'COMPLETE' &&
+                <>
+                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
+                    Finish
+                  </Button>
+
+                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
+                    Cancel
+                  </Button>
+                </>
+              }
             </Col>
             <Col xs="4" className="my-auto">
-              <h5>Zeit: {this.state.time_since_order}</h5>
+              <h5>Zeit: {this.props.status === 'COMPLETE' ? this.getDate() : this.state.time_since_order}</h5>
             </Col>
           </Row>
 
-          <Row>
-            <Col>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Gericht</th>
-                    <th>Anzahl</th>
-                    <th>Preis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.props.articles.map((article, index) => (
-                    <tr key={index}>
+          {this.props.status !== 'COMPLETE' &&
+            <Row>
+              <Col>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Gericht</th>
+                      <th>Anzahl</th>
+                      <th>Preis</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.props.articles.map((article, index) => (
+                      <tr key={index}>
+                        <td>
+                           {article.alias} - {article.name}
+                        </td>
+                        <td>
+                          {article.amount}
+                        </td>
+                        <td>
+                          {this.inEuro(article.price)}
+                        </td>
+                      </tr>
+                    ))}
+
+                    <tr>
+                      <td colSpan="2">Total</td>
                       <td>
-                         {article.alias} - {article.name}
-                      </td>
-                      <td>
-                        {article.amount}
-                      </td>
-                      <td>
-                        {this.inEuro(article.price)}
+                        {this.inEuro(total)}
                       </td>
                     </tr>
-                  ))}
-
-                  <tr>
-                    <td colSpan="2">Total</td>
-                    <td>
-                      {this.inEuro(total)}
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+          }
         </Card.Body>
       </Card>
     );
