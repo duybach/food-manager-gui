@@ -10,7 +10,7 @@ class Order extends React.Component {
     super(props);
 
     let seconds_since_order = Math.round((new Date()).getTime() / 1000
-      - ((new Date(this.props.created)).getTime() / 1000))
+      - (this.props.created / 1000))
 
     this.state = {
       seconds_since_order: seconds_since_order,
@@ -57,7 +57,7 @@ class Order extends React.Component {
     }
 
     return (
-      <Card className="">
+      <Card>
         <Card.Body>
           <Row>
             <Col xs="8">

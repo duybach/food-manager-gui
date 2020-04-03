@@ -21,17 +21,15 @@ class OrderOverview extends React.Component {
     }
 
     return (
-      <>
-        <Row>
-          {orders.map((order, index) => (
-            <Col key={index} xs="6">
-              <Order key={index} {...order}
-                                 handleShow={this.props.handleShow}
-                                 handleOrderStatus={this.props.handleOrderStatus} />
-            </Col>
-          ))}
-        </Row>
-      </>
+      <Row>
+        {orders.map((order, index) => (
+          <Col key={index} xs="6" className="my-2">
+            <Order key={index} {...order}
+                               handleShow={this.props.handleShow}
+                               handleOrderStatus={this.props.handleOrderStatus} />
+          </Col>
+        ))}
+      </Row>
     );
   }
 }

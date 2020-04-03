@@ -116,7 +116,6 @@ class FoodManager extends React.Component {
           this.updateOverview();
         });
     }
-
   }
 
   // COMPLEMETE, TO_DO, CANCELED, IN_PROGRESS
@@ -188,17 +187,19 @@ class FoodManager extends React.Component {
               </Col>
             </Row>
             <Row>
-            <Col>
-              <OrderOverview {...this.state}
-                             active={true}
-                             handleShow={this.handleShow}
-                             handleOrderStatus={this.handleOrderStatus} />
+              <Col>
+                <OrderOverview {...this.state}
+                               active={true}
+                               handleShow={this.handleShow}
+                               handleOrderStatus={this.handleOrderStatus} />
               </Col>
             </Row>
 
-            <Col xs="12">
-              <hr />
-            </Col>
+            <Row>
+              <Col>
+                <hr />
+              </Col>
+            </Row>
 
             <Row>
               <Col>
