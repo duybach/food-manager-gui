@@ -72,11 +72,11 @@ class Order extends React.Component {
               <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
               <p className="card-text">{this.props.name}<br />{this.props.street}</p>
 
-              {this.props.status === 'TODO' &&
+              {this.props.status === 'TO_DO' &&
                 <>
                   <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
                     Start
-                  </Button>date_in_seconds
+                  </Button>
 
                   <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
                     Edit
