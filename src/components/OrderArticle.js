@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -40,15 +41,31 @@ class OrderArticle extends React.Component {
     });
   }
 
+  getTypeLabel() {
+    if (this.props.type === 'TAKE_AWAY') {
+      return (
+        <Badge variant="INFO">MITNEHMEN</Badge>
+      );
+    } else if (this.props.type === 'DELIEVERY') {
+      return (
+        <Badge variant="INFO">LIEFERUNG</Badge>
+      );
+    } else {
+      return (
+        <Badge variant="INFO">HIER ESSEN</Badge>
+      );
+    }
+  }
+
   render() {
     return (
       <Card as="Col" xs="6" onClick={(e) => {this.props.handleArticleOrderStatus(e, this.props.id)}}>
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title">Bestellung Nummer #{this.props.id}</h5>
-              <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
-              <p className="card-text">Nr. {this.props.alias} {this.props.name}<br />Anzahl: {this.props.amount}</p>
+              <h5 className="card-title font-weight-bold">Bestellung #{this.props.id}</h5>
+              <h6 className="card-subtitle mb-2 text-muted">{this.getTypeLabel()}</h6>
+              <p className="card-text"><span class="font-weight-bold">Nr. {this.props.alias} {this.props.name}<br />Anzahl: {this.props.amount}</span></p>
             </Col>
             <Col xs="4" className="my-auto">
               <h5>Zeit: {this.state.time_since_order}</h5>

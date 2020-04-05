@@ -31,7 +31,7 @@ class OrderForm extends React.Component {
         </Form.Row>
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="street" className="col-form-label">Street</Form.Label>
+            <Form.Label htmlFor="street" className="col-form-label">Straße</Form.Label>
           </Col>
           <Col xs="10">
             <Form.Control id="street" type="text" className="form-control" required value={this.props.order.street} onChange={(e) => {this.props.handleInputChange(e)}} />
@@ -40,7 +40,7 @@ class OrderForm extends React.Component {
 
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="zipcode" className="col-form-label">Zipcode</Form.Label>
+            <Form.Label htmlFor="zipcode" className="col-form-label">PLZ</Form.Label>
           </Col>
           <Col xs="10">
             <Form.Control id="zipcode" type="text" className="form-control" required value={this.props.order.zipcode} onChange={(e) => {this.props.handleInputChange(e)}} />
@@ -49,7 +49,7 @@ class OrderForm extends React.Component {
 
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="city" className="col-form-label">City</Form.Label>
+            <Form.Label htmlFor="city" className="col-form-label">Stadt</Form.Label>
           </Col>
           <Col xs="10">
             <Form.Control id="city" type="text" className="form-control" required value={this.props.order.city} onChange={(e) => {this.props.handleInputChange(e)}} />
@@ -58,7 +58,7 @@ class OrderForm extends React.Component {
 
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="telephone" className="col-form-label">Telephone</Form.Label>
+            <Form.Label htmlFor="telephone" className="col-form-label">Telefonnummer</Form.Label>
           </Col>
           <Col xs="10">
             <Form.Control id="telephone" type="tel" className="form-control" required value={this.props.order.telephone} onChange={(e) => {this.props.handleInputChange(e)}} />
@@ -84,13 +84,13 @@ class OrderForm extends React.Component {
 
         <Row className="mb-4">
           <Col>
-            <Button variant="secondary" onClick={(e) => {this.props.addArticle(e)}}>Add article</Button>
+            <Button variant="secondary" onClick={(e) => {this.props.addArticle(e)}}>Gericht hinzufügen</Button>
           </Col>
         </Row>
 
         <Row>
           <Col>
-            <Button variant="primary" type="Submit">Submit</Button>
+            <Button variant="primary" type="Submit" size="lg" block>Erstellen</Button>
           </Col>
         </Row>
       </Form>

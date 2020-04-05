@@ -1,4 +1,6 @@
 import React from 'react';
+
+import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -57,6 +59,39 @@ class Order extends React.Component {
     );
   }
 
+  getStatusLabel() {
+    if (this.props.status === 'TO_DO') {
+      return (
+        <Badge variant="secondary">TO DO</Badge>
+      );
+    } else if (this.props.status === 'IN_PROGRESS') {
+      return (
+        <Badge variant="warning">IN BEARBEITUNG</Badge>
+      );
+    } else {
+      return (
+        <Badge variant="success">FERTIG</Badge>
+      );
+    }
+  }
+
+  getTypeLabel() {
+    if (this.props.type === 'TAKE_AWAY') {
+      return (
+        <Badge variant="INFO">MITNEHMEN</Badge>
+      );
+    } else if (this.props.type === 'DELIEVERY') {
+      return (
+        <Badge variant="INFO">LIEFERUNG</Badge>
+      );
+    } else {
+      return (
+        <Badge variant="INFO">HIER ESSEN</Badge>
+      );
+    }
+  }
+
+
   render() {
     let total = 0;
     for (let article of this.props.articles) {
@@ -68,17 +103,24 @@ class Order extends React.Component {
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title">Bestellung Nummer #{this.props.id}</h5>
-              <h6 className="card-subtitle mb-2 text-muted">{this.props.type}</h6>
-              <p className="card-text">{this.props.name}<br />{this.props.street}</p>
+              <h5 className="card-title font-weight-bold">Bestellung Nummer #{this.props.id}</h5>
+              <h6 className="card-subtitle mb-2">{this.getStatusLabel()} {this.getTypeLabel()}</h6>
+
+              <p className="card-text p-0 mb-1">{this.props.name}
+                {this.props.type === 'DELIVERY' &&
+                  <>
+                    <br />{this.props.street}<br />{this.props.zipcode} {this.props.city}
+                  </>
+                }
+              </p>
 
               {this.props.status === 'TO_DO' &&
                 <>
-                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
+                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
                     Start
                   </Button>
 
-                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
                     Edit
                   </Button>
                 </>
@@ -86,11 +128,11 @@ class Order extends React.Component {
 
               {this.props.status !== 'COMPLETE' &&
                 <>
-                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
+                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
                     Finish
                   </Button>
 
-                  <Button variant="link" className="card-link p-0 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
+                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
                     Cancel
                   </Button>
                 </>
