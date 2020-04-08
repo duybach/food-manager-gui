@@ -3,6 +3,7 @@ import React from 'react';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import Row from 'react-bootstrap/Row';
 
 class OrderArticle extends React.Component {
@@ -71,6 +72,14 @@ class OrderArticle extends React.Component {
               <h5>Zeit: {this.state.time_since_order}</h5>
             </Col>
           </Row>
+
+          {this.props.status !== 'IN_PROGRESS' &&
+            <Row>
+              <Col>
+                <ProgressBar animated now={50} />
+              </Col>
+            </Row>
+          }
         </Card.Body>
       </Card>
     )

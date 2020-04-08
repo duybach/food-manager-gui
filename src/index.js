@@ -11,7 +11,6 @@ import {
 } from 'react-router-dom'
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Container from 'react-bootstrap/Container';
 
 import FoodManager from './components/FoodManager';
 import FoodWorker from './components/FoodWorker';
@@ -32,7 +31,7 @@ for (let x in this) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Navbar bg="dark" variant="dark" className="py-3 my-3">
+    <Navbar bg="dark" variant="dark" className="py-3" fixed="top">
       <Navbar.Brand href="/">FoodManager</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
@@ -53,14 +52,18 @@ ReactDOM.render(
         </Switch>
     </Router>
 
-    <footer className="text-muted footer">
-      <Container>
-        <p className="float-right mb-0">
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" sticky="bottom" className="footer">
+      <Nav className="mr-auto">
+        <Navbar.Text>
+          Created by <a href="https://github.com/ngynch" target="_blank" rel="noopener noreferrer">Cong Huan Nguyen</a> & <a href="http://github.com/duybach" target="_blank" rel="noopener noreferrer">Duy Bach Nguyen</a>
+        </Navbar.Text>
+      </Nav>
+      <Nav>
+        <Navbar.Text>
           <a href="#top">Back to top</a>
-        </p>
-        <p className="mb-0">Created by <a href="https://github.com/ngynch" target="_blank" rel="noopener noreferrer">Cong Huan Nguyen</a> & <a href="http://github.com/duybach" target="_blank" rel="noopener noreferrer">Duy Bach Nguyen</a></p>
-      </Container>
-    </footer>
+        </Navbar.Text>
+      </Nav>
+    </Navbar>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,7 +1,12 @@
 import React from 'react';
+
+import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBox, faCar, faHome } from '@fortawesome/free-solid-svg-icons'
 
 import EditOrderForm from './EditOrderForm';
 import OrderForm from './OrderForm';
@@ -247,6 +252,16 @@ class FoodManager extends React.Component {
                          removeArticle={this.removeArticle}
                          handleInputChange={this.handleInputChange}
                          handleClose={this.handleClose} />
+        </Row>
+
+        <Row className="fixed-bottom mb-5">
+          <Col>
+            <div className="float-right">
+              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faHome} /> Hier Essen</Button>
+              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faCar} /> Liefern</Button>
+              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faBox} /> Abholung</Button>
+            </div>
+          </Col>
         </Row>
       </Container>
     );
