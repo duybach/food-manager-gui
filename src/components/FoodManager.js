@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBox, faCar, faHome } from '@fortawesome/free-solid-svg-icons'
 
 import EditOrderForm from './EditOrderForm';
-import OrderForm from './OrderForm';
 import OrderOverview from './OrderOverview';
 
 import {
@@ -43,25 +42,43 @@ class FoodManager extends React.Component {
 
   componentDidMount() {
     this.updateOverview();
+    this.overviewID = setInterval(
+      () => this.updateOverview(),
+      5000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.overviewID);
   }
 
   handleClose () {
     this.setState({
-      show: false,
-      order: this.state.createOrderFallback
+      show: false
     });
   }
 
-  handleShow (event, index) {
-    fetch(`http://${REACT_APP_BACKEND_URL}:3000/order/${index}`)
-      .then(res => res.json())
-      .then(res => {
-        this.setState({
-          show: true,
-          createOrderFallback: this.state.order,
-          order: res
-        });
+  handleShow(event, index, type = null) {
+    console.log(type);
+
+    if (index < 0 && type !== null) {
+      this.setState({
+        show: true,
+        order: {
+          type: type,
+          articles: [{id: '', amount: 1}]
+        }
       });
+    } else  {
+      fetch(`http://${REACT_APP_BACKEND_URL}:3000/order/${index}`)
+        .then(res => res.json())
+        .then(res => {
+          this.setState({
+            show: true,
+            order: res
+          });
+        });
+    }
   }
 
   handleInputChange(event, input) {
@@ -99,7 +116,7 @@ class FoodManager extends React.Component {
   }
 
   handleOrderStatus(event, order_id, status) {
-    let order
+    let order;
     for (let tmp_order of this.state.orders) {
       if (tmp_order.id === order_id) {
         order = tmp_order;
@@ -123,11 +140,9 @@ class FoodManager extends React.Component {
     }
   }
 
-  // COMPLEMETE, TO_DO, CANCELED, IN_PROGRESS
-
   handleSubmit(event) {
     let method, target_url;
-    if (this.state.show) {
+    if (this.state.order.id) {
       method = 'PUT';
       target_url = '/' + this.state.order.id.toString();
     } else {
@@ -135,7 +150,24 @@ class FoodManager extends React.Component {
       target_url = ''
     }
 
-    console.log(this.state.order.type)
+    let articles_dict = {};
+    for (let article in this.state.order.articles) {
+      if (this.state.order.articles[article].id.length > 0) {
+        if (this.state.order.articles[article].id in articles_dict) {
+          articles_dict[this.state.order.articles[article].id] += this.state.order.articles[article].amount;
+        } else {
+          articles_dict[this.state.order.articles[article].id] = this.state.order.articles[article].amount;
+        }
+      }
+    }
+
+    console.log(articles_dict);
+
+    let articles = []
+    for (let article_id in articles_dict) {
+      console.log(articles);
+      articles.push({id: article_id, amount: articles_dict[article_id]});
+    }
 
     fetch(`http://${REACT_APP_BACKEND_URL}:3000/order${target_url}`, {
       method: method,
@@ -150,7 +182,7 @@ class FoodManager extends React.Component {
         zipcode: this.state.order.zipcode,
         city: this.state.order.city,
         telephone: this.state.order.telephone,
-        articles: this.state.order.articles
+        articles: articles
       })
     })
       .then(() => {
@@ -174,21 +206,13 @@ class FoodManager extends React.Component {
   }
 
   render() {
-    const show = this.state.show;
-    let order;
-    if (show) {
-      order = {order: this.state.createOrderFallback};
-    } else {
-      order = {order: this.state.order};
-    }
-
     return (
       <Container fluid>
         <Row>
           <Col xs="12" lg="8">
             <Row>
               <Col>
-                <h2>Bestellungen Übersicht</h2>
+                <h2>Alle Bestellungen</h2>
               </Col>
             </Row>
             <Row>
@@ -208,7 +232,7 @@ class FoodManager extends React.Component {
 
             <Row>
               <Col>
-                <h2>Abgeschlossene Bestellungen Übersicht</h2>
+                <h2>Abgeschlossene Bestellungen</h2>
               </Col>
             </Row>
             <Row>
@@ -219,29 +243,6 @@ class FoodManager extends React.Component {
                              handleOrderStatus={this.handleOrderStatus} />
               </Col>
             </Row>
-          </Col>
-
-          <Col xs="12" className="d-lg-none">
-            <hr />
-          </Col>
-
-          <Col xs="12" lg="4">
-            <Row>
-              <Col>
-                <h2>Bestellung erstellen</h2>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <OrderForm {...order}
-                           onSubmit={this.handleSubmit}
-                           handleArticleIdChange={this.handleArticleIdChange}
-                           handleArticleAmountChange={this.handleArticleAmountChange}
-                           addArticle={this.addArticle}
-                           removeArticle={this.removeArticle}
-                           handleInputChange={this.handleInputChange} />
-               </Col>
-             </Row>
           </Col>
 
           <EditOrderForm {...this.state}
@@ -257,9 +258,9 @@ class FoodManager extends React.Component {
         <Row className="fixed-bottom mb-5">
           <Col>
             <div className="float-right">
-              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faHome} /> Hier Essen</Button>
-              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faCar} /> Liefern</Button>
-              <Button variant="danger" size="lg" className="mx-2"><FontAwesomeIcon icon={faBox} /> Abholung</Button>
+              <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'HOUSE')}}><FontAwesomeIcon icon={faHome} /> Hier Essen</Button>
+              <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'DELIEVERY')}}><FontAwesomeIcon icon={faCar} /> Liefern</Button>
+              <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'TAKE_AWAY')}}><FontAwesomeIcon icon={faBox} /> Abholung</Button>
             </div>
           </Col>
         </Row>

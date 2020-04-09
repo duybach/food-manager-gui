@@ -24,6 +24,14 @@ class FoodWorker extends React.Component {
 
   componentDidMount() {
     this.updateOverview();
+    this.overviewID = setInterval(
+      () => this.updateOverview(),
+      5000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.overviewID);
   }
 
   updateOverview() {
@@ -54,7 +62,7 @@ class FoodWorker extends React.Component {
       <Container fluid>
         <Row>
           <Col>
-              <h2>Übersicht</h2>
+              <h2>Bestellungen</h2>
           </Col>
         </Row>
 

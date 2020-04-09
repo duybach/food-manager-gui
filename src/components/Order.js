@@ -19,6 +19,10 @@ class Order extends React.Component {
         seconds_since_order: seconds_since_order,
         time_since_order: this.toMinutesWithSeconds(seconds_since_order)
       };
+    } else {
+      this.state = {
+        date: this.getDate()
+      }
     }
   }
 
@@ -55,7 +59,7 @@ class Order extends React.Component {
     let date = new Date(this.props.created * 1);
 
     return (
-      `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear().toString().slice(2,4)} ${date.getHours()}:${date.getMinutes()}`
+      `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear().toString().slice(2,4)} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`
     );
   }
 
@@ -78,19 +82,18 @@ class Order extends React.Component {
   getTypeLabel() {
     if (this.props.type === 'TAKE_AWAY') {
       return (
-        <Badge variant="INFO">MITNEHMEN</Badge>
+        <Badge variant="info">MITNEHMEN</Badge>
       );
     } else if (this.props.type === 'DELIEVERY') {
       return (
-        <Badge variant="INFO">LIEFERUNG</Badge>
+        <Badge variant="info">LIEFERUNG</Badge>
       );
     } else {
       return (
-        <Badge variant="INFO">HIER ESSEN</Badge>
+        <Badge variant="info">HIER ESSEN</Badge>
       );
     }
   }
-
 
   render() {
     let total = 0;
@@ -103,7 +106,7 @@ class Order extends React.Component {
         <Card.Body>
           <Row>
             <Col xs="8">
-              <h5 className="card-title font-weight-bold">Bestellung Nummer #{this.props.id}</h5>
+              <h5 className="card-title font-weight-bold">Bestellung #{this.props.id}</h5>
               <h6 className="card-subtitle mb-2">{this.getStatusLabel()} {this.getTypeLabel()}</h6>
 
               <p className="card-text p-0 mb-1">{this.props.name}
@@ -116,11 +119,11 @@ class Order extends React.Component {
 
               {this.props.status === 'TO_DO' &&
                 <>
-                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
                     Start
                   </Button>
 
-                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
                     Edit
                   </Button>
                 </>
@@ -128,18 +131,18 @@ class Order extends React.Component {
 
               {this.props.status !== 'COMPLETE' &&
                 <>
-                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
                     Finish
                   </Button>
 
-                  <Button variant="primary" className="card-link p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
                     Cancel
                   </Button>
                 </>
               }
             </Col>
             <Col xs="4" className="my-auto">
-              <h5>Zeit: {this.props.status === 'COMPLETE' ? this.getDate() : this.state.time_since_order}</h5>
+              <h5>Zeit: {this.props.status === 'COMPLETE' ? this.state.date : this.state.time_since_order}</h5>
             </Col>
           </Row>
 

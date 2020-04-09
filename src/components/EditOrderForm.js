@@ -1,15 +1,32 @@
 import React from 'react';
 
+import Badge from 'react-bootstrap/Badge'
 import Modal from 'react-bootstrap/Modal';
 
 import OrderForm from './OrderForm';
 
 class EditOrderForm extends React.Component {
+  getTypeLabel() {
+    if (this.props.order.type === 'TAKE_AWAY') {
+      return (
+        <Badge variant="info">MITNEHMEN</Badge>
+      );
+    } else if (this.props.order.type === 'DELIEVERY') {
+      return (
+        <Badge variant="info">LIEFERUNG</Badge>
+      );
+    } else {
+      return (
+        <Badge variant="info">HIER ESSEN</Badge>
+      );
+    }
+  }
+
   render() {
     return (
-       <Modal show={this.props.show} onHide={this.props.handleClose}>
+       <Modal dialogClassName="modal-90w" show={this.props.show} onHide={this.props.handleClose}>
          <Modal.Header closeButton>
-           <Modal.Title>Modal heading</Modal.Title>
+           <Modal.Title>{this.props.id ? <>Bestellung Bearbeiten</> : <>Neue Bestellung</>} {this.getTypeLabel()}</Modal.Title>
          </Modal.Header>
          <Modal.Body>
           <OrderForm {...this.props}

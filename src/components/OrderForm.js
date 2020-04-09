@@ -18,7 +18,7 @@ class OrderForm extends React.Component {
           </Col>
         </Form.Row>
 
-        <Form.Row className="mb-2">
+        <Form.Row className="mb-2 d-none">
           <Col xs="2">
             <Form.Label htmlFor="type" className="col-form-label">Art</Form.Label>
           </Col>
@@ -26,10 +26,11 @@ class OrderForm extends React.Component {
             <Form.Control id="type" as="select" value={this.props.order.type} onChange={(e) => {this.props.handleInputChange(e)}} required>
               <option value="TAKE_AWAY">Abholung</option>
               <option value="DELIEVERY">Lieferung</option>
-              <option value="HOUSE">Hier essen</option>
+              <option value="HOUSE">Hier Essen</option>
             </Form.Control>
           </Col>
         </Form.Row>
+
         <Form.Row className="mb-2">
           <Col xs="2">
             <Form.Label htmlFor="street" className="col-form-label">Straße</Form.Label>
@@ -59,7 +60,7 @@ class OrderForm extends React.Component {
 
         <Form.Row className="mb-2">
           <Col xs="2">
-            <Form.Label htmlFor="telephone" className="col-form-label">Telefonnummer</Form.Label>
+            <Form.Label htmlFor="telephone" className="col-form-label text-break">Telefonnummer</Form.Label>
           </Col>
           <Col xs="10">
             <Form.Control id="telephone" type="tel" className="form-control" required value={this.props.order.telephone} onChange={(e) => {this.props.handleInputChange(e)}} />
@@ -84,8 +85,8 @@ class OrderForm extends React.Component {
         ))}
 
         <Row className="mb-4">
-          <Col>
-            <Button variant="secondary" onClick={(e) => {this.props.addArticle(e)}}>Gericht hinzufügen</Button>
+          <Col xs={{ span: 8, offset: 2 }}>
+            <Button variant="success" block onClick={(e) => {this.props.addArticle(e)}}>Gericht hinzufügen</Button>
           </Col>
         </Row>
 
