@@ -163,6 +163,10 @@ class FoodManager extends React.Component {
 
     console.log(articles_dict);
 
+    articles_dict =  {
+      1: 1
+    }
+
     let articles = []
     for (let article_id in articles_dict) {
       console.log(articles);
@@ -178,10 +182,10 @@ class FoodManager extends React.Component {
         name: this.state.order.name,
         status: this.state.order.status,
         type: this.state.order.type,
-        street: this.state.order.street,
-        zipcode: this.state.order.zipcode,
-        city: this.state.order.city,
-        telephone: this.state.order.telephone,
+        street: 1, // this.state.order.street,
+        zipcode: 1, // this.state.order.zipcode,
+        city: 1, // this.state.order.city,
+        telephone: 1, // this.state.order.telephone,
         articles: articles
       })
     })

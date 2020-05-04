@@ -14,6 +14,7 @@ import Navbar from 'react-bootstrap/Navbar';
 
 import FoodManager from './components/FoodManager';
 import FoodWorker from './components/FoodWorker';
+import OrderQueue from './components/OrderQueue';
 
 function Worker() {
   let { id } = useParams();
@@ -39,12 +40,16 @@ ReactDOM.render(
           <Nav.Link href="/">Home</Nav.Link>
           <Nav.Link href="/worker/1">Worker 1</Nav.Link>
           <Nav.Link href="/worker/2">Worker 2</Nav.Link>
+          <Nav.Link href="/queue">Queue</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
 
     <Router>
         <Switch>
+          <Route path="/queue">
+            <OrderQueue />
+          </Route>
           <Route path="/worker/:id" children={<Worker />} />
           <Route path="/">
             <FoodManager />
