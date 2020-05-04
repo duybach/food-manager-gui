@@ -17,7 +17,7 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "PORT=3001 REACT_APP_BACKEND_URL=$(hostname -I | cut -d \" \" -f1) react-scripts start",
+    "start": "HOST=0.0.0.0 PORT=3001 REACT_APP_BACKEND_URL=192.168.178.197 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
