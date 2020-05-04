@@ -135,11 +135,15 @@ class Order extends React.Component {
                     Finish
                   </Button>
 
-                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none d-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
                     Cancel
                   </Button>
                 </>
               }
+
+              <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'DELETE')}}>
+                Delete
+              </Button>
             </Col>
             <Col xs="4" className="my-auto">
               <h5>Zeit: {this.props.status === 'COMPLETE' ? this.state.date : this.state.time_since_order}</h5>

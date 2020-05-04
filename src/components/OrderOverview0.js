@@ -11,12 +11,16 @@ class OrderOverview extends React.Component {
     for (let order of this.props.orders) {
 
       if (this.props.active) {
-        if (!(order.status === 'CANCEL' || order.status === 'COMPLETE')) {
-          orders.push(order);
+        if (!(order.status === 'CANCEL' || order.status === 'COMPLETE' || order.status === 'TO_DO')) {
+          if (order.status !== 'DELETE') {
+            orders.push(order);
+          }
         }
       } else {
         if (order.status === 'CANCEL' || order.status === 'COMPLETE') {
-          orders.push(order);
+          if (order.status !== 'DELETE') {
+            orders.push(order);
+          }
         }
       }
     }

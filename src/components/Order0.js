@@ -98,7 +98,7 @@ class Order extends React.Component {
       <Card>
         <Card.Body>
           <Row>
-            <Col xs="8">
+            <Col xs="12">
               <h5 className="card-title font-weight-bold">Bestellung {this.props.name}</h5>
               <h6 className="card-subtitle mb-2">{this.getStatusLabel()} {this.getTypeLabel()}</h6>
             </Col>
