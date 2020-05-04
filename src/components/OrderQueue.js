@@ -45,7 +45,7 @@ class FoodManager extends React.Component {
     return (
       <Container fluid>
         <Row>
-          <Col xs="12" lg="8">
+          <Col xs="7">
             <Row>
               <Col>
                 <h2>Bestellungen in Bearbeitung</h2>
@@ -57,16 +57,12 @@ class FoodManager extends React.Component {
                                active={true} />
               </Col>
             </Row>
+          </Col>
 
+          <Col xs="5">
             <Row>
               <Col>
-                <hr />
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <h2>Bestellungen Fertig</h2>
+                <h2>Bestellungen Abholbereit</h2>
               </Col>
             </Row>
             <Row>

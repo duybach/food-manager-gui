@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import Table from 'react-bootstrap/Table';
 
 class Order extends React.Component {
   constructor(props) {
@@ -96,34 +95,21 @@ class Order extends React.Component {
   }
 
   render() {
-    let total = 0;
-    for (let article of this.props.articles) {
-      total += article.price;
-    }
-
     return (
       <Card>
         <Card.Body>
           <Row>
-            <Col xs="8">
-              <h5 className="card-title font-weight-bold">Bestellung #{this.props.id}</h5>
+            <Col xs="12">
+              <h5 className="card-title font-weight-bold">Bestellung {this.props.name}</h5>
               <h6 className="card-subtitle mb-2">{this.getStatusLabel()} {this.getTypeLabel()}</h6>
-
-              <p className="card-text p-0 mb-1">{this.props.name}
-                {this.props.type === 'DELIVERY' &&
-                  <>
-                    <br />{this.props.street}<br />{this.props.zipcode} {this.props.city}
-                  </>
-                }
-              </p>
 
               {this.props.status === 'TO_DO' &&
                 <>
                   <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'IN_PROGRESS')}}>
-                    Start
+                    Kochen
                   </Button>
 
-                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
+                  <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none d-none" onClick={(e) => {this.props.handleShow(e, this.props.id)}}>
                     Edit
                   </Button>
                 </>
@@ -132,7 +118,7 @@ class Order extends React.Component {
               {this.props.status !== 'COMPLETE' &&
                 <>
                   <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'COMPLETE')}}>
-                    Finish
+                    Fertig
                   </Button>
 
                   <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none d-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'CANCEL')}}>
@@ -142,51 +128,10 @@ class Order extends React.Component {
               }
 
               <Button variant="outline-primary" className="mr-2 p-1 mb-2 text-decoration-none" onClick={(e) => {this.props.handleOrderStatus(e, this.props.id, 'DELETE')}}>
-                Delete
+                Löschen
               </Button>
             </Col>
-            <Col xs="4" className="my-auto">
-              <h5>Zeit: {this.props.status === 'COMPLETE' ? this.state.date : this.state.time_since_order}</h5>
-            </Col>
           </Row>
-
-          {this.props.status !== 'COMPLETE' &&
-            <Row>
-              <Col>
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>Gericht</th>
-                      <th>Anzahl</th>
-                      <th>Preis</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.props.articles.map((article, index) => (
-                      <tr key={index}>
-                        <td>
-                           {article.alias} - {article.name}
-                        </td>
-                        <td>
-                          {article.amount}
-                        </td>
-                        <td>
-                          {this.inEuro(article.price)}
-                        </td>
-                      </tr>
-                    ))}
-
-                    <tr>
-                      <td colSpan="2">Total</td>
-                      <td>
-                        {this.inEuro(total)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
-          }
         </Card.Body>
       </Card>
     );

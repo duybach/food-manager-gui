@@ -14,7 +14,7 @@ class OrderForm extends React.Component {
             <Form.Label htmlFor="name" className="col-form-label">Name</Form.Label>
           </Col>
           <Col xs="10">
-            <Form.Control id="name" type="text" className="form-control" required value={this.props.order.name} onChange={(e) => {this.props.handleInputChange(e)}} />
+            <Form.Control id="name" name="name" type="text" className="form-control" required value={this.props.order.name} onChange={(e) => {this.props.handleInputChange(e)}} />
           </Col>
         </Form.Row>
 

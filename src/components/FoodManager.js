@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBox, faCar, faHome } from '@fortawesome/free-solid-svg-icons'
+import { faBox } from '@fortawesome/free-solid-svg-icons'
 
 import EditOrderForm from './EditOrderForm';
 import OrderOverview from './OrderOverview';
@@ -59,8 +59,6 @@ class FoodManager extends React.Component {
   }
 
   handleShow(event, index, type = null) {
-    console.log(type);
-
     if (index < 0 && type !== null) {
       this.setState({
         show: true,
@@ -79,6 +77,8 @@ class FoodManager extends React.Component {
           });
         });
     }
+
+    window.test();
   }
 
   handleInputChange(event, input) {
@@ -213,10 +213,10 @@ class FoodManager extends React.Component {
     return (
       <Container fluid>
         <Row>
-          <Col xs="12" lg="8">
+          <Col xs="7">
             <Row>
               <Col>
-                <h2>Alle Bestellungen</h2>
+                <h2>Bestellungen in Bearbeitung</h2>
               </Col>
             </Row>
             <Row>
@@ -227,16 +227,12 @@ class FoodManager extends React.Component {
                                handleOrderStatus={this.handleOrderStatus} />
               </Col>
             </Row>
+          </Col>
 
+          <Col xs="5">
             <Row>
               <Col>
-                <hr />
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <h2>Abgeschlossene Bestellungen</h2>
+                <h2>Bestellungen Abholbereit</h2>
               </Col>
             </Row>
             <Row>
@@ -262,8 +258,8 @@ class FoodManager extends React.Component {
         <Row className="fixed-bottom mb-5">
           <Col>
             <div className="float-right">
-              <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'HOUSE')}}><FontAwesomeIcon icon={faHome} /> Hier Essen</Button>
-              <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'DELIEVERY')}}><FontAwesomeIcon icon={faCar} /> Liefern</Button>
+              {/* <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'HOUSE')}}><FontAwesomeIcon icon={faHome} /> Hier Essen</Button> */}
+              {/* <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'DELIEVERY')}}><FontAwesomeIcon icon={faCar} /> Liefern</Button> */}
               <Button variant="danger" size="lg" className="mx-2" onClick={(e) => {this.handleShow(e, -1, 'TAKE_AWAY')}}><FontAwesomeIcon icon={faBox} /> Abholung</Button>
             </div>
           </Col>
